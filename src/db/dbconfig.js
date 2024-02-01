@@ -27,20 +27,15 @@ const db= {};
 db.Sequelize = Sequelize;   
 db.sequelize = sequelize;
 
+// one to many b/w users and reports
+db.users.hasMany(db.reports,{foreignKey:'userId'})
+db.reports.belongsTo(db.users,{foreignKey:'userId'})
+ 
 
-db.librarians = require('../models/librarian.js')(sequelize, DataTypes)
-db.users = require('../models/user.js')(sequelize, DataTypes)
-db.books = require('../models/book.js')(sequelize, DataTypes)
-db.transactions  = require('../models/transaction.js')(sequelize, DataTypes)
-
-
-// many to many between users and books
-db.users.belongsToMany(db.books , { through : db.transactions, foreignKey : 'userId', onDelete: 'CASCADE'})
-db.books.belongsToMany(db.users , { through : db.transactions, foreignKey : 'bookId', onDelete: 'CASCADE'})
-
-
-db.transactions.belongsTo(db.books, { foreignKey: 'bookId' });
-db.transactions.belongsTo(db.users, { foreignKey: 'userId' });
+ 
+// one to one b/w orders and shipments
+db.shipments.hasOne(db.order, { as: 'order', foreignKey: 'orderId' });
+db.order.belongsTo(db.shipments, { as: 'shipment', foreignKey: 'orderId' });
 
 
 db.sequelize.sync({ force: false }).then(() => {

@@ -1,12 +1,11 @@
 const db = require("../db/dbconfig");
 
-// Create main model \\
 const Users = db.users;
 
 // Create Users \\
 const createUser = async (req, res) => {
 
-  
+
   const existingUsersCount = await Users.count();
     
   if (existingUsersCount > 0) {
@@ -119,8 +118,6 @@ const updateUserProfile = async (req, res) => {
     }
 
   try {
-
-   
    
       updates.forEach((item) => (req.user[item] = req.body[item]));
 

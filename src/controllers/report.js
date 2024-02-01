@@ -2,8 +2,8 @@
 const db = require("../db/dbconfig")
 const Shipment = db.shipments
 const Inventory = db.inventory
-const Order = db.order
-const User = db.users
+const Orders = db.order
+
  
 const shipmentReport = async (req, res) => {
  
