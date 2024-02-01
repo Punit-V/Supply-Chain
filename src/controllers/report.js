@@ -109,14 +109,14 @@ const inventoryReport = async (req, res) => {
  
         // Turnover Rate
     const turnoverRates = [];
-
+    const itemDetails = await Inventory.findAll();
     for (const item of itemDetails) {
       const quantitySold = await Orders.sum('quantity', {
-        where: { item_code: item.item_code },
+        where: { item_code: id },
       });
 
       const averageInventory = await Inventory.average('quantity', {
-        where: { item_code: item.item_code },
+        where: { item_code: id },
       });
 
       const itemTurnoverRate = calculateTurnoverRate(quantitySold, averageInventory);
@@ -165,3 +165,6 @@ module.exports = {
 }
 
 
+const calculateTurnoverRate = (quantitySold, averageInventory) => {
+    return quantitySold / averageInventory;
+  };
