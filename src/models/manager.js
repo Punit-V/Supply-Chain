@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         department: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         tokens: {
             type: DataTypes.TEXT,
