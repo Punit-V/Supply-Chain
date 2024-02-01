@@ -103,7 +103,8 @@ module.exports = (sequelize, DataTypes) => {
   // Instance method to generate auth token \\
   Users.prototype.generateAuthToken = async function () {
     const user = this;
-    const token = jwt.sign({ id: user.id.toString(), userType: "user" }, process.env.JWT_SECRET);
+    
+    const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET);
 
     // Get the current tokens as an array
     let tokens = JSON.parse(user.tokens || "[]");
@@ -126,7 +127,7 @@ module.exports = (sequelize, DataTypes) => {
 
     delete values.password;
     delete values.tokens;
-    delete values.avatar;
+   
 
     return values;
   };

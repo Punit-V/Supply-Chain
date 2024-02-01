@@ -1,4 +1,3 @@
-const sharp = require("sharp");
 const db = require("../db/dbconfig");
 
 // Create main model \\
@@ -11,6 +10,11 @@ const createUser = async (req, res) => {
   // Check if any required attribute is missing
   if (!username || !email || !password || !role || !department) {
     return res.status(400).send({ error: 'Please provide username, email, password, role, and department.' });
+}
+
+if( role === "staff")
+{
+  return res.status(400).send({ error: 'Please login as manager' });
 }
 
 let info = {
@@ -84,16 +88,20 @@ const logoutUser = async (req, res) => {
 
 // Read Users Profile \\
 const readUserProfile = async (req, res) => {
-  if(!req.user)
-  {
-    return res.status(401).send({ error: "Please authenticate as a user." });
-  }
 
   res.status(200).send(req.user);
+
+  
 };
 
 // Update Users Profile \\
 const updateUserProfile = async (req, res) => {
+
+  
+  if(req.user.role === "staff" || !req.user )
+  {
+    return res.status(401).send({ error: "Please authenticate as a manager." });
+  }
     const updates = Object.keys(req.body);
     const allowedUpdates = ["username", "email", "password", "role", "department"];
     const isValid = updates.every((item) => allowedUpdates.includes(item));
@@ -103,71 +111,31 @@ const updateUserProfile = async (req, res) => {
     }
 
   try {
-    updates.forEach((item) => (req.user[item] = req.body[item]));
 
-    await req.user.save();
+   
+   
+      updates.forEach((item) => (req.user[item] = req.body[item]));
 
-    res.status(200).send(req.user);
+      await req.user.save();
+  
+      res.status(200).send(req.user);
+  
+    
   } catch (e) {
     res.status(400).send(e);
   }
 };
 
-// Upload Users Profile Picture \\
-const uploadUserProfilePicture = async (req, res) => {
-  try {
-    if (!req.file.buffer) {
-      return res.status(404).send({ error: "Please select an image file!!" });
-    }
-
-    const buffer = await sharp(req.file.buffer)
-      .resize({ width: 250, height: 250 })
-      .png()
-      .toBuffer();
-
-    req.user.avatar = buffer;
-
-    await req.user.save();
-
-    res.status(200).send(req.user);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-};
-
-// Display Users Profile Picture \\
-const displayUserProfilePicture = async (req, res) => {
-  try {
-    const user = await Users.findByPk(req.user.id);
-
-    if (!user || !user.avatar) {
-      throw new Error("Oops, Something went wrong !!");
-    }
-
-    res.set("Content-Type", "image/png");
-
-    res.status(200).send(user.avatar);
-  } catch (e) {
-    res.status(404).send({ error: "Oops, Something went wrong !!" });
-  }
-};
-
-// Delete Users Profile Picture \\
-const deleteUserProfilePicture = async (req, res) => {
-  try {
-    req.user.avatar = null;
-
-    await req.user.save();
-
-    res.status(200).send(req.user);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-};
 
 // Delete Users Profile \\
 const deleteUserProfile = async (req, res) => {
+    
+  if(req.user.role === "staff" || !req.user )
+  {
+    return res.status(401).send({ error: "Please authenticate as a manager." });
+  }
   try {
+
     await req.user.destroy();
 
     res.status(200).send(req.user);
@@ -182,8 +150,5 @@ module.exports = {
   logoutUser,
   readUserProfile,
   updateUserProfile,
-  uploadUserProfilePicture,
-  displayUserProfilePicture,
-  deleteUserProfilePicture,
   deleteUserProfile,
 };
