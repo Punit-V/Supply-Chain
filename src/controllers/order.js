@@ -14,6 +14,12 @@ const createOrder = async (req, res) => {
 
     const { user_id, order_date, item_code, item_name, quantity } = req.body;
 
+    
+ // Check if the quantity in the order is greater than 0
+ if (quantity <= 0) {
+    return res.status(400).json({ error: 'Invalid quantity in the order' });
+  }
+
     // Calculate total value based on item's price from inventory
     const totalValue = await calculateTotalValue(item_code, quantity);
 
@@ -65,7 +71,7 @@ const calculateTotalValue = async (itemCode, quantity) => {
       });
   
       if (!item) {
-        throw new Error('Item not found in inventory');
+        throw new Error('Invalid item or Item not found in inventory');
       }
   
       const totalValue = item.price * quantity;

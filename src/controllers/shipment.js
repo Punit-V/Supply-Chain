@@ -12,7 +12,22 @@ const createShipment = async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
+ // Fetch details of item_code and quantity from the order
+ const { item_code, quantity } = order;
 
+ // Fetch the current quantity from the inventory table
+const inventoryItem = await Inventory.findOne({ where: { id: item_code } });
+
+if (!inventoryItem) {
+  return res.status(400).json({ error: 'Item deleted from inventory or Invalid item_code in the order' });
+}
+
+// Perform operations on the quantity
+const updatedQuantity = inventoryItem.quantity - quantity;
+
+if (updatedQuantity < 0) {
+  return res.status(400).json({ error: 'Insufficient quantity in the inventory' });
+}
 
     // Create a new shipment
     const newShipment = await Shipments.create({
@@ -24,7 +39,13 @@ const createShipment = async (req, res) => {
       current_location: 'Warehouse', // Initial location
     });
 
-    // Store the tracking ID for future reference
+
+
+// Update the inventory with the new quantity
+await Inventory.update({ quantity: updatedQuantity }, { where: { id: item_code } });
+
+
+ // Store the tracking ID for future reference
     const trackingId = newShipment.id;
 
     res.status(201).json({ message: 'Shipment created', trackingId });
@@ -33,6 +54,9 @@ const createShipment = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
 const updateShipmentStatus = async (req, res) => {
     try {
       const { trackingId, currentLocation, status } = req.body;
