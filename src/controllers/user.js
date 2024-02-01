@@ -5,6 +5,17 @@ const Users = db.users;
 
 // Create Users \\
 const createUser = async (req, res) => {
+
+  
+  const existingUsersCount = await Users.count();
+    
+  if (existingUsersCount > 0) {
+    const user = req.user;
+    if (!user || user.getDataValue("role") !== "Manager") {
+      return res.status(401).send({ error: "Please authenticate as a manager!" });
+    }
+  }
+
   const { username, email, password , role, department} = req.body;
 
   // Check if any required attribute is missing
@@ -12,10 +23,7 @@ const createUser = async (req, res) => {
     return res.status(400).send({ error: 'Please provide username, email, password, role, and department.' });
 }
 
-if( role === "staff")
-{
-  return res.status(400).send({ error: 'Please login as manager' });
-}
+
 
 let info = {
     username: req.body.username,

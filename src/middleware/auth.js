@@ -6,6 +6,13 @@ const Users = db.users;
 
 const auth = async (req, res, next) => {
   try {
+    const existingUsersCount = await Users.count();
+   
+    if (existingUsersCount === 0 && req.body.role === "Manager") {
+      next();
+      
+    }
+
     const token = req.header("Authorization").replace("Bearer ", "");
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -14,7 +21,7 @@ const auth = async (req, res, next) => {
         const user = await Users.findOne({
             where: {
               id: decoded.id,
-              
+
             }
           });
     

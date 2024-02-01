@@ -1,10 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const Shipments = sequelize.define("shipments", {
-      shipment_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
+     
       destination: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -27,13 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       },
     });
   
-    Shipments.associate = (models) => {
-      Shipments.belongsTo(models.Orders, {
-        foreignKey: 'order_id',
-        onDelete: 'CASCADE',
-      });
-    };
-  
+
     return Shipments;
   };
-  
