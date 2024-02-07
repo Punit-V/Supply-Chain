@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      report_data: {
+        type: DataTypes.JSON,
+        allowNull: false,
+      }
     });
   
    
