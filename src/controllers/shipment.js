@@ -1,9 +1,13 @@
 const db = require('../db/dbconfig')
 const Shipments = db.shipments
 const Orders = db.orders;
+const Inventory= db.inventory;
 
 // Endpoint to create a shipment
 const createShipment = async (req, res) => {
+  if(!req.user || req.user.role === 'customer'){
+    res.status(400).json({ error: 'please authenticate as a staff or manager' });
+}
   try {
     const {  orderId, destination, shipmentDate, expectedDelivery } = req.body;
 
@@ -12,22 +16,7 @@ const createShipment = async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });
     }
- // Fetch details of item_code and quantity from the order
- const { item_code, quantity } = order;
-
- // Fetch the current quantity from the inventory table
-const inventoryItem = await Inventory.findOne({ where: { id: item_code } });
-
-if (!inventoryItem) {
-  return res.status(400).json({ error: 'Item deleted from inventory or Invalid item_code in the order' });
-}
-
-// Perform operations on the quantity
-const updatedQuantity = inventoryItem.quantity - quantity;
-
-if (updatedQuantity < 0) {
-  return res.status(400).json({ error: 'Insufficient quantity in the inventory' });
-}
+ 
 
     // Create a new shipment
     const newShipment = await Shipments.create({
@@ -38,12 +27,6 @@ if (updatedQuantity < 0) {
       status: 'In Transit', // Initial status
       current_location: 'Warehouse', // Initial location
     });
-
-
-
-// Update the inventory with the new quantity
-await Inventory.update({ quantity: updatedQuantity }, { where: { id: item_code } });
-
 
  // Store the tracking ID for future reference
     const trackingId = newShipment.id;
@@ -58,6 +41,9 @@ await Inventory.update({ quantity: updatedQuantity }, { where: { id: item_code }
 
 
 const updateShipmentStatus = async (req, res) => {
+  if(!req.user || req.user.role === 'customer'){
+    res.status(400).json({ error: 'please authenticate' });
+}
     try {
       const { trackingId, currentLocation, status } = req.body;
 

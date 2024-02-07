@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            isIn: [['staff', 'manager']], // Role should be either 'staff' or 'manager'
+            isIn: [['staff', 'manager', 'customer']], // Role should be either 'staff' or 'manager'
         },
     },
     department: {
@@ -63,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     avatar: {
       type: DataTypes.BLOB("long"),
     },
+    
   });
 
   // Modify values beforing creating \\
@@ -104,7 +105,7 @@ module.exports = (sequelize, DataTypes) => {
   Users.prototype.generateAuthToken = async function () {
     const user = this;
     
-    const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.id.toString() }, process.env.JWT_SECRET, {expiresIn : "10h"});
 
     // Get the current tokens as an array
     let tokens = JSON.parse(user.tokens || "[]");

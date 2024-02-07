@@ -3,8 +3,9 @@ const Inventory = db.inventory
 
 // Endpoint to add an item to the inventory
 const addItem = async (req, res) => {
+
      
-  if(req.user.role === "staff" || !req.user )
+  if(req.user.role === "staff" || !req.user || req.user.role === "customer"  )
   {
     return res.status(401).send({ error: "Please authenticate as a manager." });
   }
@@ -24,7 +25,7 @@ const addItem = async (req, res) => {
 // Endpoint to list all items in the inventory
 const listItems = async (req, res) => {
      
-  if(req.user.role === "staff" || !req.user )
+  if(req.user.role === "staff" || !req.user || req.user.role === "customer"  )
   {
     return res.status(401).send({ error: "Please authenticate as a manager." });
   }
@@ -41,7 +42,7 @@ const listItems = async (req, res) => {
 // Endpoint to delete a specific item from the inventory
 const deleteItem = async (req, res) => {
      
-  if(req.user.role === "staff" || !req.user )
+  if(req.user.role === "staff" || !req.user || req.user.role === "customer"  )
   {
     return res.status(401).send({ error: "Please authenticate as a manager." });
   }
@@ -50,7 +51,7 @@ const deleteItem = async (req, res) => {
 
     // Find the item by ID and delete it
     const deletedItem = await Inventory.destroy({
-      where: { item_id: itemId },
+      where: {id: itemId },
     });
 
     if (deletedItem) {

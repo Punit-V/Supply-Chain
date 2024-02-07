@@ -1,23 +1,26 @@
 const express = require('express');
 require('./db/dbconfig.js');
-require('./notification/notification.js')
 
-const librarianRouter = require('./routers/librarian.js');
-const userRouter = require('./routers/user.js');
-const bookRouter = require('./routers/book.js');
 
 
 const app = express();  
 const port = process.env.PORT;
 app.use(express.json());
 
-//Routers
-app.use( librarianRouter);
-app.use( userRouter);
-app.use( bookRouter);
 
 
+const userRouter = require("./routers/user")
+const inventoryRouter = require("./routers/inventory")
+const shipmentRouter = require("./routers/shipment")
+const reportRouter = require("./routers/report")
+const orderRouter = require("./routers/order")
 
+app.use(userRouter)
+app.use(inventoryRouter)
+app.use(shipmentRouter)
+app.use(reportRouter)
+app.use(orderRouter)
+ 
 
 app.get('', (req, res) => {
     res.send('check check checkkk')

@@ -2,8 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const Orders = sequelize.define("orders", {
     user_id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+     
     },
     order_date: {
       type: DataTypes.DATE,

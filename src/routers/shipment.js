@@ -4,9 +4,9 @@ const shipmentsController = require('../controllers/shipment');
 const auth = require("../middleware/auth")
 
 // Endpoint to create a shipment
-router.post('/create', auth,shipmentsController.createShipment);
+router.post('/createShipment', auth,shipmentsController.createShipment);
 
 // Endpoint to update shipment status
-router.post('/update', auth,shipmentsController.updateShipmentStatus);
+router.patch('/updateShipment', auth,shipmentsController.updateShipmentStatus);
 
 module.exports = router;
